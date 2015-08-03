@@ -1,0 +1,24 @@
+{
+  "name": "VBApi",
+  "version": "0.0.0",
+  "description": "Node API for VBulletin",
+  "main": "server.js",
+  "scripts": {
+    "test": "karma start test/karma.conf.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Skalv/VBApi"
+  },
+  "keywords": [
+    "VBulletin"
+  ],
+  "author": "Florent Boutin",
+  "license": "The MIT License (MIT)",
+  "bugs": {
+    "url": "https://github.com/Skalv/VBApi/issues"
+  },
+  "dependencies": {
+    "express": "~4.13.3"
+  }
+}
