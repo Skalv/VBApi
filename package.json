@@ -4,7 +4,7 @@
   "description": "Node API for VBulletin",
   "main": "server.js",
   "scripts": {
-    "test": "karma start test/karma.conf.coffee"
+    "start": "coffee server.coffee"
   },
   "repository": {
     "type": "git",
@@ -18,10 +18,8 @@
   "bugs": {
     "url": "https://github.com/Skalv/VBApi/issues"
   },
-  "scripts": {
-    "start": "coffee server.coffee"
-  },
   "dependencies": {
-    "express": "~4.13.3"
+    "express": "~4.13.3",
+    "mysql": "~2.8.0"
   }
 }
