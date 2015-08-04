@@ -1,7 +1,7 @@
 express = require "express"
 app     = express()
 
-config  = require "./configs/db"
+config  = require './configs/db'
 
 mysql   = require "mysql"
 
@@ -14,20 +14,22 @@ connection = mysql.createConnection({
   })
 
 
-app.get '/test', (req, res)->
+# app.get '/test', (req, res)->
 
-  connection.connect()
+#   connection.connect()
 
-  connection.query "SELECT * FROM vb_thread as t WHERE t.threadid = 7", (err, rows, fields)->
-    if err then res.send err
-    console.log rows[0]
-    res.send ""
+#   connection.query "SELECT * FROM vb_thread as t WHERE t.threadid = 7", (err, rows, fields)->
+#     if err then res.send err
+#     console.log rows[0]
+#     res.send ""
 
-  connection.end()
+#   connection.end()
 
 app.get "/", (req, res)->
   res.send 'hello world'
-  console.log config
+
+apiRoutes = require("./routes/api")(express, connection)
+app.use '/api', apiRoutes
 
 server = app.listen 3333, ->
   host = server.address().address
