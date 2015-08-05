@@ -6,30 +6,21 @@ config  = require './configs/db'
 mysql   = require "mysql"
 
 
-connection = mysql.createConnection({
-    host:     config.host
-    user:     config.user
-    password: config.password
-    database: config.database
-  })
-
-
-# app.get '/test', (req, res)->
-
-#   connection.connect()
-
-#   connection.query "SELECT * FROM vb_thread as t WHERE t.threadid = 7", (err, rows, fields)->
-#     if err then res.send err
-#     console.log rows[0]
-#     res.send ""
-
-#   connection.end()
+pool = mysql.createPool
+  host: config.host
+  user: config.user
+  password: config.password
+  database: config.database
+  debug: false
 
 app.get "/", (req, res)->
   res.send 'hello world'
 
-apiRoutes = require("./routes/api")(express, connection)
-app.use '/api', apiRoutes
+threadRoutes = require("./routes/thread")(express, pool)
+app.use '/thread', threadRoutes
+
+userRoutes = require("./routes/user")(express, pool)
+app.use '/user', userRoutes
 
 server = app.listen 3333, ->
   host = server.address().address
