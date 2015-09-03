@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+
+{% block migration_content %}
+    <form action="/migration" method="POST">
+      <fieldset class="form-group">
+        <label for="inputForumId">Forum Id</label>
+        <input type="text" class="form-control" name="forumId" id="inputForumId" placeholder="547" required>
+        <small class="text-muted">Id du forum que l'on veut migrer</small>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="inputNbThread">Nombre de sujet</label>
+        <input type="text" class="form-control" name="nbThread" id="inputNbThread" placeholder="12">
+        <small class="text-muted">Nombre de sujet que l'on veut migrer, laisser vide pour tout migrer.</small>
+      </fieldset>
+      <button type="submit" class="btn btn-warning">Migrer</button>
+    </form>
+{% endblock %}

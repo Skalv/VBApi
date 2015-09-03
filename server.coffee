@@ -8,6 +8,7 @@ config          = require './configs/db'
 mysql           = require "mysql"
 mongoose        = require "mongoose"
 mongooseConnect = mongoose.connection
+bodyParser      = require "body-parser"
 
 
 # Connect to mongo DB
@@ -25,6 +26,10 @@ mysqlPool = mysql.createPool
   password: config.mysqlPassword
   database: config.mysqlDatabase
   debug: false
+
+# Enable body-parser
+app.use bodyParser.urlencoded {extended: true}
+app.use bodyParser.json()
 
 # Enable Swig
 app.engine 'html', swig.renderFile
