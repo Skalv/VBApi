@@ -19,6 +19,7 @@
     "url": "https://github.com/Skalv/VBApi/issues"
   },
   "dependencies": {
+    "body-parser": "^1.13.3",
     "express": "~4.13.3",
     "mongoose": "^4.1.5",
     "mysql": "~2.8.0",

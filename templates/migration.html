@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="jumbotron">
+      <h2>Migration</h2>
+      <p class="lead">Envois une sélection de sujets (threads) VBulletin vers MongoDB.</p>
+      <hr class="m-y-md">
+      <a href="/" class="btn btn-primary">Dashboard</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <form action="/migration" method="POST">
+      <fieldset class="form-group">
+        <label for="inputForumId">ForumId</label>
+        <input type="text" class="form-control" name="forumId" id="inputForumId" placeholder="547">
+        <small class="text-muted">Id du forum que l'on veut migrer</small>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="inputNbThread">ForumId</label>
+        <input type="text" class="form-control" name="nbThread" id="inputNbThread" placeholder="12">
+        <small class="text-muted">Nombre de sujet que l'on veut migrer, laisser vide pour tout migrer.</small>
+      </fieldset>
+      <button type="submit" class="btn btn-warning">Migrer</button>
+    </form>
+  </div>
+
+{% endblock %}

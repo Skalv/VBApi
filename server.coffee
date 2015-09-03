@@ -19,7 +19,7 @@ mongooseConnect.once 'open', (cb)=>
   console.log 'Connected to Mongo !'
 
 # Connect to Mysql (VBulletin)
-pool = mysql.createPool
+mysqlPool = mysql.createPool
   host: config.mysqlHost
   user: config.mysqlUser
   password: config.mysqlPassword
@@ -37,10 +37,13 @@ swig.setDefaults cache: false
 dashboard = require("./routes/dashboard")(express)
 app.use '/', dashboard
 
-threadRoutes = require("./routes/thread")(express, pool)
+migration = require("./routes/migration")(express, mysqlPool)
+app.use '/migration', migration
+
+threadRoutes = require("./routes/thread")(express, mysqlPool)
 app.use '/thread', threadRoutes
 
-userRoutes = require("./routes/user")(express, pool)
+userRoutes = require("./routes/user")(express, mysqlPool)
 app.use '/user', userRoutes
 
 # Start server
