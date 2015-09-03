@@ -1,6 +1,8 @@
 express = require "express"
 app     = express()
 
+swig    = require "swig"
+
 config  = require './configs/db'
 
 mysql   = require "mysql"
@@ -13,8 +15,18 @@ pool = mysql.createPool
   database: config.database
   debug: false
 
+app.engine 'html', swig.renderFile
+app.set 'view engine','html'
+app.set 'views', __dirname + '/templates'
+app.set 'view cache', false
+swig.setDefaults cache: false
+
+
 app.get "/", (req, res)->
   res.send 'hello world'
+
+dashboard = require("./routes/dashboard")(express)
+app.use '/dashboard', dashboard
 
 threadRoutes = require("./routes/thread")(express, pool)
 app.use '/thread', threadRoutes

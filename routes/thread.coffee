@@ -12,7 +12,8 @@ module.exports = (express, pool)->
       console.log "Connected as id #{connection.threadId}"
       connection.query request, (err, rows)->
         connection.release()
-        if not err then res.json rows
+        if not err
+          res.json rows
       connection.on "error", (err)->
         res.json
           "code": 100
@@ -21,7 +22,8 @@ module.exports = (express, pool)->
   apiRouter.route "/"
     .get (req, res)->
       request = "SELECT *
-        FROM vb_thread"
+        FROM vb_thread
+        LIMIT 10"
 
       handle_database req, res, request
 
