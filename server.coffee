@@ -24,7 +24,6 @@ mysqlPool = mysql.createPool
   host: config.mysqlHost
   user: config.mysqlUser
   password: config.mysqlPassword
-  database: config.mysqlDatabase
   debug: false
 
 # Enable body-parser

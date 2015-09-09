@@ -1,5 +1,10 @@
 module.exports =
-  "host": "host"
-  "user": "user"
-  "password": "password"
-  "database": "mydb"
+  "mysqlHost"     : ""
+  "mysqlUser"     : ""
+  "mysqlPassword" : ""
+  "mysqlVBDB"     : ""
+  "mysqlDRDB"     : ""
+
+  "mongoHost"     : ""
+  "mongoPort"     : ""
+  "mongoDatabase" : ""
