@@ -24,23 +24,32 @@ module.exports = (express, mysqlPool)->
 
   migrateFromDrupal = (nid)->
     # get thread from drupal.
-    query = "SELECT *
-    FROM #{DRUPAL}.drupal_node n"
+    query = "SELECT n.type, n.title, n.created, n.changed,
+    t.field_teaser_value as teaser, b.field_body_value as body, s.field_summary_value as summary,
+    do.sitename as section,
+    ic.field_image_carousel_alt as carousel_alt, fmc.filename as carousel_filename, fmc.uri as carousel_uri,
+    it.field_image_thumbnail_alt as thumbnail_alt, fmt.filename as thumbnail_filename, fmt.uri as thumbnail_uri"
+
+    query += " FROM #{DRUPAL}.drupal_node n"
     # Add teaser, summary, body
-    query += "LEFT JOIN #{DRUPAL}.drupal_field_data_field_teaser t ON n.nid = t.entity_id
+    query += " LEFT JOIN #{DRUPAL}.drupal_field_data_field_teaser t ON n.nid = t.entity_id
     LEFT JOIN #{DRUPAL}.drupal_field_data_field_body b ON n.nid = b.entity_id
     LEFT JOIN #{DRUPAL}.drupal_field_data_field_summary s ON n.nid = s.entity_id"
-
-
-
-    LEFT JOIN #{DRUPAL}.drupal_field_data_field_games g ON n.nid = g.entity_id
-    LEFT JOIN #{DRUPAL}.drupal_field_data_field_type ty ON n.nid = ty.entity_id
-    LEFT JOIN #{DRUPAL}.drupal_field_data_field_chronique_type ct ON n.nid = ct.entity_id
-    LEFT JOIN #{DRUPAL}.drupal_field_data_field_image_carousel ic ON n.nid = ic.entity_id
+    # Get sections.
+    query += " LEFT JOIN #{DRUPAL}.drupal_field_data_field_games g ON n.nid = g.entity_id
+    LEFT JOIN #{DRUPAL}.drupal_domain do ON g.field_games_value = do.domain_id"
+    # Get type
+    # query += " LEFT JOIN #{DRUPAL}.drupal_field_data_field_type ty ON n.nid = ty.entity_id"
+    # Get images
+    query += " LEFT JOIN #{DRUPAL}.drupal_field_data_field_image_carousel ic ON n.nid = ic.entity_id
     LEFT JOIN #{DRUPAL}.drupal_field_data_field_image_thumbnail it ON n.nid = it.entity_id
+    LEFT JOIN #{DRUPAL}.drupal_file_managed fmc ON fmc.fid = ic.field_image_carousel_fid
+    LEFT JOIN #{DRUPAL}.drupal_file_managed fmt ON fmt.fid = it.field_image_thumbnail_fid"
+    ###
     LEFT JOIN #{DRUPAL}.drupal_field_data_field_related_topics rt ON n.nid = rt.entity_id
-    WHERE n.nid = #{nid};"
-
+    ###
+    query += " WHERE n.nid = #{nid};"
+    console.log query
     requestDatabase(query).then((result)->
       console.log "success", result
     , (err)->
