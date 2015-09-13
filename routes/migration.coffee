@@ -1,6 +1,8 @@
-config = require '../configs/db'
-VB     = config.mysqlVBDB
-DRUPAL = config.mysqlDRDB
+config  = require '../configs/db'
+VB      = config.mysqlVBDB
+DRUPAL  = config.mysqlDRDB
+Article = require '../models/article'
+Moment  = require 'moment'
 
 module.exports = (express, mysqlPool)->
   migrateRouter = express.Router()
@@ -24,12 +26,11 @@ module.exports = (express, mysqlPool)->
 
   migrateFromDrupal = (nid)->
     # get thread from drupal.
-    query = "SELECT n.type, n.title, n.created, n.changed,
+    query = "SELECT n.type, n.title, n.created, n.changed, n.uid,
     t.field_teaser_value as teaser, b.field_body_value as body, s.field_summary_value as summary,
     do.sitename as section,
     ic.field_image_carousel_alt as carousel_alt, fmc.filename as carousel_filename, fmc.uri as carousel_uri,
     it.field_image_thumbnail_alt as thumbnail_alt, fmt.filename as thumbnail_filename, fmt.uri as thumbnail_uri"
-
     query += " FROM #{DRUPAL}.drupal_node n"
     # Add teaser, summary, body
     query += " LEFT JOIN #{DRUPAL}.drupal_field_data_field_teaser t ON n.nid = t.entity_id
@@ -49,17 +50,40 @@ module.exports = (express, mysqlPool)->
     LEFT JOIN #{DRUPAL}.drupal_field_data_field_related_topics rt ON n.nid = rt.entity_id
     ###
     query += " WHERE n.nid = #{nid};"
-    console.log query
+    # requesting
     requestDatabase(query).then((result)->
-      console.log "success", result
+      # Define description
+      if result[0].teaser?
+        description = result[0].teaser
+      else if result[0].summary?
+        description = result[0].summary
+      else
+        description = " "
+      # Create Article
+      newArticle = new Article
+      newArticle.title               = result[0].title
+      newArticle.bodyHTML            = result[0].body
+      newArticle.description         = description
+      newArticle.genre               = result[0].type
+      newArticle.section             = result[0].section
+      newArticle.state               = "published"
+      newArticle.author              = result[0].uid
+      newArticle.thumbnails.filename = result[0].thumbnail_filename
+      newArticle.thumbnails.alt      = result[0].thumbnail_alt
+      newArticle.dateCreated         = Moment.unix(result[0].created).format()
+      newArticle.dateUpdated         = Moment.unix(result[0].changed).format()
+      newArticle.Published           = result[0].created
+      newArticle.fromV2              = true
+      # Save article
+      newArticle.save (err)->
+        if err then return console.log "error on mongo save : ", err
+        console.log "success saving on mongo !"
     , (err)->
       console.log "Error !!!", err
     )
 
   migrateFromVB = (thread)->
     console.log "VB !", thread.threadid
-
-
 
   migrateRouter.route '/'
     .get (req, res)->
