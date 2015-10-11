@@ -52,6 +52,13 @@ module.exports = (express, mysqlPool)->
     query += " WHERE n.nid = #{nid};"
     # requesting
     requestDatabase(query).then((result)->
+      # Define Thumb URI
+      realThumbUri = "/img/defaultThumb.jpg"
+      if result[0].thumbnail_uri?
+        uri = result[0].thumbnail_uri
+        cleanThumbUri = uri.substring(uri.lastIndexOf("://")+2)
+        realThumbUri = "http://portail.fureur.org/sites/default/files#{cleanThumbUri}"
+
       # Define description
       if result[0].teaser?
         description = result[0].teaser
@@ -70,6 +77,7 @@ module.exports = (express, mysqlPool)->
       newArticle.author              = result[0].uid
       newArticle.thumbnails.filename = result[0].thumbnail_filename
       newArticle.thumbnails.alt      = result[0].thumbnail_alt
+      newArticle.thumbnails.path     = realThumbUri
       newArticle.dateCreated         = Moment.unix(result[0].created).format()
       newArticle.dateUpdated         = Moment.unix(result[0].changed).format()
       newArticle.Published           = result[0].created
