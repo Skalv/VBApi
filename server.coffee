@@ -41,8 +41,11 @@ swig.setDefaults cache: false
 dashboard = require("./routes/dashboard")(express)
 app.use '/', dashboard
 
-migration = require("./routes/migration")(express, mysqlPool)
-app.use '/migration', migration
+migrationArt = require("./routes/migration_article")(express, mysqlPool)
+app.use '/migration/article', migrationArt
+
+migrationUsr = require("./routes/migration_user")(express, mysqlPool)
+app.use '/migration/user', migrationUsr
 
 threadRoutes = require("./routes/thread")(express, mysqlPool)
 app.use '/thread', threadRoutes
