@@ -3,8 +3,32 @@ VB      = config.mysqlVBDB
 DRUPAL  = config.mysqlDRDB
 User    = require '../models/user'
 Moment  = require 'moment'
+_       = require 'underscore'
 
 module.exports = (express, mysqlPool)->
+
+  saveInMongo = (vbUser)->
+    Save = new Promise (resolve, reject)->
+      newUser = new User
+      newUser.local.userid      = vbUser.userid
+      newUser.local.usergroupid = vbUser.usergroupid
+      newUser.local.username    = vbUser.username
+      newUser.local.password    = vbUser.password
+      newUser.local.email       = vbUser.email
+      newUser.local.salt        = vbUser.salt
+      newUser.fromVB            = true
+      newUser.avatar.filename   = vbUser.filename
+      newUser.avatar.dateline   = vbUser.dateline
+      newUser.group.usertitle   = vbUser.usertitle
+      newUser.profil.ville      = vbUser.field2
+      newUser.profil.team       = vbUser.field5
+
+      newUser.save (err)->
+        if err then reject("error saving in mongo !"); return
+        console.log newUser.local.username, "saved !"
+        resolve true
+
+    return Save
 
   requestDatabase = (query)->
     Request = new Promise (resolve, reject)->
@@ -31,41 +55,35 @@ module.exports = (express, mysqlPool)->
     query += " LEFT JOIN #{VB}.vb_userfield uf ON uf.userid = u.userid"
     # Query end
     query += " ORDER BY u.userid
-    LIMIT 10
     ;"
 
     return query
-
 
   migrateRouter = express.Router()
 
   migrateRouter.route '/'
     .get (req, res)->
-      res.render "migration/_user_validation"
+      requestDatabase("SELECT COUNT(*) as nbuser FROM #{VB}.vb_user;").then (result)->
+        res.render "migration/_user_validation",
+          nbuser: result[0]["nbuser"]
+
 
   migrateRouter.route '/migrate'
     .get (req, res)->
       query = getUserQuery()
       requestDatabase(query).then((result)->
-        for user in result
-          newUser = new User
-          newUser.local.userid      = user.userid
-          newUser.local.usergroupid = user.usergroupid
-          newUser.local.username    = user.username
-          newUser.local.password    = user.password
-          newUser.local.email       = user.email
-          newUser.local.salt        = user.salt
-          newUser.fromVB            = true
-          newUser.avatar.filename   = user.filename
-          newUser.avatar.dateline   = user.dateline
-          newUser.group.usertitle   = user.usertitle
-          newUser.profil.ville      = user.field2
-          newUser.profil.team       = user.field5
+        console.log "GO !", result.length
+        _.reduce(result, (previousPromise, user)->
+          previousPromise.then(->
+            return saveInMongo(user)
+          , (err)->
+            console.log err
+          )
+        , Promise.resolve()).then(()->
+          console.log "FINI"
+          res.sendStatus 200
+        )
 
-          newUser.save (err)->
-            if err then return console.log "error on mongo save : #{err}"
-            console.log "success saving user !"
-        res.json {"success": true}
       , (err)->
         res.json {"err": err}
       )

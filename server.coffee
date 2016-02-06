@@ -17,7 +17,7 @@ console.log mongoAdr
 mongoose.connect mongoAdr
 mongooseConnect.on 'err', console.error.bind(console, 'connection error:')
 mongooseConnect.once 'open', (cb)=>
-  console.log 'Connected to Mongo !'
+  console.log 'Connected to Mongo !', mongoAdr
 
 # Connect to Mysql (VBulletin)
 mysqlPool = mysql.createPool
@@ -25,6 +25,10 @@ mysqlPool = mysql.createPool
   user: config.mysqlUser
   password: config.mysqlPassword
   debug: false
+
+mysqlPool.getConnection (err, connection)->
+  if err then console.log "Mysql connection err : ", err; return
+  console.log "Connected to MYSQL !", config.mysqlHost
 
 # Enable body-parser
 app.use bodyParser.urlencoded {extended: true}
@@ -38,7 +42,7 @@ app.set 'view cache', false
 swig.setDefaults cache: false
 
 # Router
-dashboard = require("./routes/dashboard")(express)
+dashboard = require("./routes/dashboard")(express, mysqlPool)
 app.use '/', dashboard
 
 migrationArt = require("./routes/migration_article")(express, mysqlPool)

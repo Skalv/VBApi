@@ -1,7 +1,7 @@
 module.exports =
-  "mysqlHost"     : ""
-  "mysqlUser"     : ""
-  "mysqlPassword" : ""
+  "mysqlHost"     : process.env.MYSQL_ADDR
+  "mysqlUser"     : process.env.MYSQL_User
+  "mysqlPassword" : process.env.MYSQL_PWD
   "mysqlVBDB"     : ""
   "mysqlDRDB"     : ""
 
