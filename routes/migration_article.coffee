@@ -137,6 +137,7 @@ module.exports = (express, mysqlPool)->
       query = "SELECT COUNT(*) as nbPost
       FROM #{VB}.vb_thread t
       LEFT JOIN #{VB}.vb_post p ON p.threadid = t.threadid
+      AND t.firstpostid = p.postid
       WHERE t.forumid = #{_forumId}
       ;"
       # Request and display result on validation page
@@ -164,7 +165,7 @@ module.exports = (express, mysqlPool)->
       # add ; to end of query...
       query += ";"
       requestDatabase(query).then((result)->
-        console.log "GO Articles !"
+        console.log "GO Articles !", result.length
 
         DPColArticles = []
         VBColArticles = []
@@ -175,7 +176,7 @@ module.exports = (express, mysqlPool)->
             DPColArticles.push nid
           else
             VBColArticles.push article
-
+        console.log "count", DPColArticles.length, VBColArticles.length
         console.log "Migrate from DP"
         migrateFromDrupal(DPColArticles).then(->
           console.log "DRUPAL migration end !"
