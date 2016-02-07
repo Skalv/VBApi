@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block migration_content %}
-    <form action="/migration" method="POST">
+    <form action="/migration/article" method="POST">
       <fieldset class="form-group">
         <label for="inputForumId">Forum Id</label>
         <input type="text" class="form-control" name="forumId" id="inputForumId" placeholder="547" required>
@@ -14,4 +14,20 @@
       </fieldset>
       <button type="submit" class="btn btn-warning">Migrer</button>
     </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Forum name</th>
+          <th>Forum ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for forum in forums %}
+          <tr>
+            <td>{{forum.title}}</td>
+            <td>{{forum.forumId}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 {% endblock %}

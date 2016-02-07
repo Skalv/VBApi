@@ -12,7 +12,7 @@ ArticleSchema = new Schema
   slug:          {type: String}
   body:          {type: String}
   bodyHTML:      {type: String}
-  description:   {type: String, required: true}
+  description:   {type: String}
   thumbnails:
     alt:         {type: String}
     filename:    {type: String}
