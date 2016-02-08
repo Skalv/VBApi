@@ -24,9 +24,11 @@ module.exports = (express, mysqlPool)->
       newUser.profil.team       = vbUser.field5
 
       newUser.save (err)->
-        if err then reject("error saving in mongo !"); return
-        console.log newUser.local.username, "saved !"
-        resolve true
+        if err
+          reject err
+        else
+          console.log newUser.local.username, "saved !"
+          resolve true
 
     return Save
 
@@ -77,7 +79,7 @@ module.exports = (express, mysqlPool)->
           previousPromise.then(->
             return saveInMongo(user)
           , (err)->
-            console.log err
+            console.log "error in mongo save : ", err
           )
         , Promise.resolve()).then(()->
           console.log "FINI"
