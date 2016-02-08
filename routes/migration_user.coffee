@@ -88,12 +88,11 @@ module.exports = (express, mysqlPool)->
           )
         , Promise.resolve()).then(()->
           console.log "FINI"
-          res.sendStatus 200
         )
-
       , (err)->
-        res.json {"err": err}
+        console.log "ERROR", err
       )
+      res.render "migration/_pending"
 
 
   return migrateRouter
