@@ -16,6 +16,9 @@ RUN npm install
 COPY . /usr/src/TMPApp
 RUN coffee --compile --output /usr/src/app /usr/src/TMPApp
 
+# ADD templates
+COPY templates /usr/src/app
+
 EXPOSE 3000
 
 CMD ["npm", "start"]
