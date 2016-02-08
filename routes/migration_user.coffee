@@ -4,11 +4,12 @@ DRUPAL  = config.mysqlDRDB
 User    = require '../models/user'
 Moment  = require 'moment'
 _       = require 'underscore'
+RSVP    = require 'rsvp'
 
 module.exports = (express, mysqlPool)->
 
   saveInMongo = (vbUser)->
-    Save = new Promise (resolve, reject)->
+    Save = new RSVP.Promise (resolve, reject)->
       newUser = new User
       newUser.local.userid      = vbUser.userid
       newUser.local.usergroupid = vbUser.usergroupid
@@ -33,7 +34,7 @@ module.exports = (express, mysqlPool)->
     return Save
 
   requestDatabase = (query)->
-    Request = new Promise (resolve, reject)->
+    Request = new RSVP.Promise (resolve, reject)->
       mysqlPool.getConnection (err, connection)->
         if err
           connection.release()
@@ -75,8 +76,12 @@ module.exports = (express, mysqlPool)->
       query = getUserQuery()
       requestDatabase(query).then((result)->
         console.log "GO !", result.length
+        i = 1
         _.reduce(result, (previousPromise, user)->
           previousPromise.then(->
+            console.log i
+            i += 1
+            #return RSVP.Promise.resolve()
             return saveInMongo(user)
           , (err)->
             console.log "error in mongo save : ", err

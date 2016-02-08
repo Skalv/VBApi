@@ -4,6 +4,7 @@ DRUPAL  = config.mysqlDRDB
 Article = require '../models/article'
 Moment  = require 'moment'
 _       = require 'underscore'
+RSVP    = require 'rsvp'
 
 module.exports = (express, mysqlPool)->
   migrateRouter = express.Router()
@@ -12,7 +13,7 @@ module.exports = (express, mysqlPool)->
   _forumTitle   = null
 
   requestDatabase = (query)->
-    Request = new Promise (resolve, reject)->
+    Request = new RSVP.Promise (resolve, reject)->
       mysqlPool.getConnection (err, connection)->
         if err
           connection.release()
@@ -26,7 +27,7 @@ module.exports = (express, mysqlPool)->
     return Request
 
   migrateFromDrupal = (nids)->
-    Migrate = new Promise (resolve, reject)->
+    Migrate = new RSVP.Promise (resolve, reject)->
       if nids.length is 0 then resolve true; return
       # get thread from drupal.
       query = "SELECT n.type, n.title, n.created, n.changed, n.uid,
@@ -61,7 +62,7 @@ module.exports = (express, mysqlPool)->
         articleNotSave = []
         _.reduce(result, (previousPromise, articleDP)->
           previousPromise.then(->
-            Save = new Promise (resolve, reject)->
+            Save = new RSVP.Promise (resolve, reject)->
               # Define Thumb URI
               realThumbUri = "/img/defaultThumb.jpg"
               if articleDP.thumbnail_uri?
@@ -114,7 +115,7 @@ module.exports = (express, mysqlPool)->
     return Migrate
 
   migrateFromVB = (thread)->
-    Migrate = new Promise (resolve, reject)->
+    Migrate = new RSVP.Promise (resolve, reject)->
       console.log "VB !", thread.threadid
       resolve true
     return Migrate
