@@ -17,7 +17,8 @@ COPY . /usr/src/TMPApp
 RUN coffee --compile --output /usr/src/app /usr/src/TMPApp
 
 # ADD templates
-COPY templates /usr/src/app
+RUN mkdir -p /usr/src/app/templates
+COPY templates /usr/src/app/templates
 
 EXPOSE 3000
 
